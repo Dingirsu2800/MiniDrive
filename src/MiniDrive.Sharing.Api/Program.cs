@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using MiniDrive.Common;
 using MiniDrive.Common.Caching;
+using MiniDrive.Common.Observability;
 using MiniDrive.Sharing;
 using MiniDrive.Sharing.Repositories;
 using MiniDrive.Sharing.Services;
@@ -19,6 +20,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Common infrastructure
 builder.Services.AddRedisCache(builder.Configuration);
+builder.Services.AddOpenTelemetryTracing(builder.Configuration, "MiniDrive.Sharing.Api");
 
 // Sharing DI
 builder.Services.AddDbContext<SharingDbContext>(options =>
@@ -38,13 +40,7 @@ builder.Services.AddScoped<ShareRepository>();
 builder.Services.AddScoped<IShareService, ShareService>();
 
 // Microservice clients
-var identityServiceUrl = builder.Configuration["Services:Identity"] ?? "http://localhost:5001";
-builder.Services.AddHttpClient<IIdentityClient, IdentityClient>(client =>
-{
-    client.BaseAddress = new Uri(identityServiceUrl);
-    client.Timeout = TimeSpan.FromSeconds(30);
-})
-.AddDefaultResilience();
+builder.Services.AddCachedIdentityClient(builder.Configuration);
 
 var auditServiceUrl = builder.Configuration["Services:Audit"] ?? "http://localhost:5005";
 builder.Services.AddHttpClient<IAuditClient, AuditClient>(client =>

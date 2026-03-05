@@ -98,6 +98,29 @@ public class FolderService : IFolderService
     }
 
     /// <summary>
+    /// Lists folders for the authenticated user with pagination.
+    /// </summary>
+    public async Task<Result<PagedResult<Folder>>> ListFoldersAsync(
+        Guid ownerId,
+        Guid? parentFolderId,
+        string? searchTerm,
+        Pagination pagination)
+    {
+        PagedResult<Folder> result;
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            result = await _folderRepository.SearchByOwnerAsync(ownerId, searchTerm, parentFolderId, pagination);
+        }
+        else
+        {
+            result = await _folderRepository.GetByOwnerAsync(ownerId, parentFolderId, pagination);
+        }
+
+        return Result<PagedResult<Folder>>.Success(result);
+    }
+
+    /// <summary>
     /// Gets the folder hierarchy (breadcrumb path).
     /// </summary>
     public async Task<Result<IReadOnlyCollection<Folder>>> GetFolderPathAsync(Guid folderId, Guid ownerId)

@@ -64,6 +64,25 @@ public class ShareRepository
     }
 
     /// <summary>
+    /// Gets shares created by a user with pagination.
+    /// </summary>
+    public async Task<PagedResult<Share>> GetByOwnerAsync(Guid ownerId, Pagination pagination)
+    {
+        var query = _context.Shares
+            .Where(s => s.OwnerId == ownerId && !s.IsDeleted);
+
+        var totalCount = await query.LongCountAsync();
+
+        var items = await query
+            .OrderByDescending(s => s.CreatedAtUtc)
+            .Skip(pagination.Skip)
+            .Take(pagination.Take)
+            .ToListAsync();
+
+        return new PagedResult<Share>(items, pagination.PageNumber, pagination.PageSize, totalCount);
+    }
+
+    /// <summary>
     /// Gets shares with a specific user.
     /// </summary>
     public async Task<IReadOnlyCollection<Share>> GetBySharedWithUserAsync(Guid userId)
@@ -72,6 +91,25 @@ public class ShareRepository
             .Where(s => s.SharedWithUserId == userId && !s.IsDeleted && s.IsActive)
             .OrderByDescending(s => s.CreatedAtUtc)
             .ToListAsync();
+    }
+
+    /// <summary>
+    /// Gets shares with a specific user with pagination.
+    /// </summary>
+    public async Task<PagedResult<Share>> GetBySharedWithUserAsync(Guid userId, Pagination pagination)
+    {
+        var query = _context.Shares
+            .Where(s => s.SharedWithUserId == userId && !s.IsDeleted && s.IsActive);
+
+        var totalCount = await query.LongCountAsync();
+
+        var items = await query
+            .OrderByDescending(s => s.CreatedAtUtc)
+            .Skip(pagination.Skip)
+            .Take(pagination.Take)
+            .ToListAsync();
+
+        return new PagedResult<Share>(items, pagination.PageNumber, pagination.PageSize, totalCount);
     }
 
     /// <summary>

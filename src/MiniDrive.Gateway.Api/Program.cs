@@ -11,7 +11,7 @@ builder.Services.AddHttpClient();
 var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?? (builder.Environment.IsDevelopment() 
         ? new[] { "http://localhost:3000", "http://localhost:3001" }
-        : new[] { });
+        : Array.Empty<string>());
 
 if (corsOrigins.Length > 0)
 {

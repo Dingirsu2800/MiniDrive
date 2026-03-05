@@ -115,6 +115,8 @@ public class FileController : ControllerBase
     public async Task<IActionResult> ListFiles(
         [FromQuery] Guid? folderId = null,
         [FromQuery] string? search = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
         [FromHeader(Name = "Authorization")] string? authorization = null)
     {
         var userId = await GetUserIdAsync(authorization);
@@ -123,14 +125,29 @@ public class FileController : ControllerBase
             return Unauthorized(new { error = "Invalid or missing authorization token." });
         }
 
-        var result = await _fileService.ListFilesAsync(userId.Value, folderId, search);
+        var pagination = new Pagination(pageNumber, pageSize);
+        var result = await _fileService.ListFilesAsync(userId.Value, folderId, search, pagination);
         if (!result.Succeeded)
         {
             return BadRequest(new { error = result.Error });
         }
 
-        var files = result.Value!.Select(MapToResponse).ToList();
-        return Ok(files);
+        var pagedResult = result.Value!;
+        var files = pagedResult.Items.Select(MapToResponse).ToList();
+        
+        return Ok(new
+        {
+            data = files,
+            pagination = new
+            {
+                pageNumber = pagedResult.PageNumber,
+                pageSize = pagedResult.PageSize,
+                totalCount = pagedResult.TotalCount,
+                totalPages = pagedResult.TotalPages,
+                hasPreviousPage = pagedResult.HasPreviousPage,
+                hasNextPage = pagedResult.HasNextPage
+            }
+        });
     }
 
     /// <summary>

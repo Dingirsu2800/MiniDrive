@@ -70,10 +70,20 @@ public sealed class RedisCacheService : ICacheService
             _ => JsonSerializer.Serialize(value, _serializerOptions)
         };
 
-        await _database.StringSetAsync(
-            NormalizeKey(key),
-            payload,
-            ttl ?? _options.DefaultTtl).ConfigureAwait(false);
+        var effectiveTtl = ttl ?? _options.DefaultTtl;
+        if (effectiveTtl.HasValue)
+        {
+            await _database.StringSetAsync(
+                NormalizeKey(key),
+                payload,
+                effectiveTtl.Value).ConfigureAwait(false);
+        }
+        else
+        {
+            await _database.StringSetAsync(
+                NormalizeKey(key),
+                payload).ConfigureAwait(false);
+        }
     }
 
     public async Task<bool> RemoveAsync(string key, CancellationToken cancellationToken = default)
@@ -108,7 +118,7 @@ public sealed class RedisCacheService : ICacheService
             await SetAsync(key, created, ttl, cancellationToken).ConfigureAwait(false);
         }
 
-        return created;
+        return created!;
     }
 
     private string NormalizeKey(string key)

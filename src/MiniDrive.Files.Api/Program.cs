@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MiniDrive.Common;
 using MiniDrive.Common.Caching;
+using MiniDrive.Common.Observability;
 using MiniDrive.Files;
 using MiniDrive.Files.Repositories;
 using MiniDrive.Files.Services;
@@ -21,6 +22,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Common infrastructure
 builder.Services.AddRedisCache(builder.Configuration);
+builder.Services.AddOpenTelemetryTracing(builder.Configuration, "MiniDrive.Files.Api");
 
 // Storage configuration
 builder.Services.AddFileStorage(options =>
@@ -57,13 +59,7 @@ builder.Services.AddScoped<MiniDrive.Audit.Services.IAuditService, MiniDrive.Fil
 builder.Services.AddScoped<IFileService, FileService>();
 
 // Microservice clients
-var identityServiceUrl = builder.Configuration["Services:Identity"] ?? "http://localhost:5001";
-builder.Services.AddHttpClient<IIdentityClient, IdentityClient>(client =>
-{
-    client.BaseAddress = new Uri(identityServiceUrl);
-    client.Timeout = TimeSpan.FromSeconds(30);
-})
-.AddDefaultResilience();
+builder.Services.AddCachedIdentityClient(builder.Configuration);
 
 var quotaServiceUrl = builder.Configuration["Services:Quota"] ?? "http://localhost:5004";
 builder.Services.AddHttpClient<IQuotaClient, QuotaClient>(client =>

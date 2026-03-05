@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using MiniDrive.Common;
 using MiniDrive.Common.Caching;
+using MiniDrive.Common.Observability;
 using MiniDrive.Folders;
 using MiniDrive.Folders.Repositories;
 using MiniDrive.Folders.Services;
@@ -18,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 // Common infrastructure
 builder.Services.AddRedisCache(builder.Configuration);
+builder.Services.AddOpenTelemetryTracing(builder.Configuration, "MiniDrive.Folders.Api");
 
 // Folders DI
 builder.Services.AddDbContext<FolderDbContext>(options =>
@@ -36,13 +38,7 @@ builder.Services.AddScoped<FolderRepository>();
 builder.Services.AddScoped<IFolderService, FolderService>();
 
 // Microservice clients
-var identityServiceUrl = builder.Configuration["Services:Identity"] ?? "http://localhost:5001";
-builder.Services.AddHttpClient<IIdentityClient, IdentityClient>(client =>
-{
-    client.BaseAddress = new Uri(identityServiceUrl);
-    client.Timeout = TimeSpan.FromSeconds(30);
-})
-.AddDefaultResilience();
+builder.Services.AddCachedIdentityClient(builder.Configuration);
 
 var app = builder.Build();
 

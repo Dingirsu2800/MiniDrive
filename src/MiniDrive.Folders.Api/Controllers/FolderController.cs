@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using MiniDrive.Common;
 using MiniDrive.Folders.DTOs;
 using MiniDrive.Folders.Services;
 using MiniDrive.Clients.Identity;
@@ -77,6 +78,8 @@ public class FolderController : ControllerBase
     public async Task<IActionResult> ListFolders(
         [FromQuery] Guid? parentFolderId = null,
         [FromQuery] string? search = null,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 20,
         [FromHeader(Name = "Authorization")] string? authorization = null)
     {
         var userId = await GetUserIdAsync(authorization);
@@ -85,14 +88,29 @@ public class FolderController : ControllerBase
             return Unauthorized(new { error = "Invalid or missing authorization token." });
         }
 
-        var result = await _folderService.ListFoldersAsync(userId.Value, parentFolderId, search);
+        var pagination = new Pagination(pageNumber, pageSize);
+        var result = await _folderService.ListFoldersAsync(userId.Value, parentFolderId, search, pagination);
         if (!result.Succeeded)
         {
             return BadRequest(new { error = result.Error });
         }
 
-        var folders = result.Value!.Select(MapToResponse).ToList();
-        return Ok(folders);
+        var pagedResult = result.Value!;
+        var folders = pagedResult.Items.Select(MapToResponse).ToList();
+        
+        return Ok(new
+        {
+            data = folders,
+            pagination = new
+            {
+                pageNumber = pagedResult.PageNumber,
+                pageSize = pagedResult.PageSize,
+                totalCount = pagedResult.TotalCount,
+                totalPages = pagedResult.TotalPages,
+                hasPreviousPage = pagedResult.HasPreviousPage,
+                hasNextPage = pagedResult.HasNextPage
+            }
+        });
     }
 
     /// <summary>

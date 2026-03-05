@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MiniDrive.Common;
 using MiniDrive.Files.Entities;
 
 namespace MiniDrive.Files.Repositories;
@@ -45,6 +46,34 @@ public class FileRepository
             .ToListAsync();
     }
 
+    public async Task<PagedResult<FileEntry>> GetByOwnerAsync(
+        Guid ownerId,
+        Guid? folderId,
+        Pagination pagination)
+    {
+        var query = _context.Files
+            .Where(f => f.OwnerId == ownerId && !f.IsDeleted);
+
+        if (folderId == null)
+        {
+            query = query.Where(f => f.FolderId == null);
+        }
+        else
+        {
+            query = query.Where(f => f.FolderId == folderId);
+        }
+
+        var totalCount = await query.LongCountAsync();
+
+        var items = await query
+            .OrderByDescending(f => f.CreatedAtUtc)
+            .Skip(pagination.Skip)
+            .Take(pagination.Take)
+            .ToListAsync();
+
+        return new PagedResult<FileEntry>(items, pagination.PageNumber, pagination.PageSize, totalCount);
+    }
+
     public async Task<IReadOnlyCollection<FileEntry>> SearchByOwnerAsync(
         Guid ownerId,
         string? searchTerm,
@@ -73,6 +102,43 @@ public class FileRepository
         return await query
             .OrderByDescending(f => f.CreatedAtUtc)
             .ToListAsync();
+    }
+
+    public async Task<PagedResult<FileEntry>> SearchByOwnerAsync(
+        Guid ownerId,
+        string? searchTerm,
+        Guid? folderId,
+        Pagination pagination)
+    {
+        var query = _context.Files
+            .Where(f => f.OwnerId == ownerId && !f.IsDeleted);
+
+        if (folderId != null)
+        {
+            query = query.Where(f => f.FolderId == folderId);
+        }
+        else
+        {
+            query = query.Where(f => f.FolderId == null);
+        }
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var term = searchTerm.ToLowerInvariant();
+            query = query.Where(f =>
+                EF.Functions.Like(f.FileName.ToLower(), $"%{term}%") ||
+                (f.Description != null && EF.Functions.Like(f.Description.ToLower(), $"%{term}%")));
+        }
+
+        var totalCount = await query.LongCountAsync();
+
+        var items = await query
+            .OrderByDescending(f => f.CreatedAtUtc)
+            .Skip(pagination.Skip)
+            .Take(pagination.Take)
+            .ToListAsync();
+
+        return new PagedResult<FileEntry>(items, pagination.PageNumber, pagination.PageSize, totalCount);
     }
 
     public async Task<FileEntry> CreateAsync(FileEntry file)

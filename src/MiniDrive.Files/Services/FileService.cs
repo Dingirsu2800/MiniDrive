@@ -240,6 +240,39 @@ public class FileService : IFileService
     }
 
     /// <summary>
+    /// Lists files for the authenticated user with pagination.
+    /// </summary>
+    public async Task<Result<PagedResult<FileEntry>>> ListFilesAsync(
+        Guid ownerId,
+        Guid? folderId,
+        string? searchTerm,
+        Pagination pagination)
+    {
+        // Validate search term for security issues
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            var searchValidation = FileNameValidator.ValidateSearchTerm(searchTerm);
+            if (!searchValidation.Succeeded)
+            {
+                return Result<PagedResult<FileEntry>>.Failure(searchValidation.Error);
+            }
+        }
+
+        PagedResult<FileEntry> result;
+
+        if (!string.IsNullOrWhiteSpace(searchTerm))
+        {
+            result = await _fileRepository.SearchByOwnerAsync(ownerId, searchTerm, folderId, pagination);
+        }
+        else
+        {
+            result = await _fileRepository.GetByOwnerAsync(ownerId, folderId, pagination);
+        }
+
+        return Result<PagedResult<FileEntry>>.Success(result);
+    }
+
+    /// <summary>
     /// Deletes a file (soft delete).
     /// </summary>
     public async Task<Result> DeleteFileAsync(
