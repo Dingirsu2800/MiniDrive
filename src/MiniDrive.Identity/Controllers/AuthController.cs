@@ -8,9 +8,9 @@ namespace MiniDrive.Identity.Controllers;
 [Route("api/[controller]")]
 public class AuthController : ControllerBase
 {
-    private readonly IAuthServices _authServices;
+    private readonly IAuthService _authServices;
 
-    public AuthController(IAuthServices authServices)
+    public AuthController(IAuthService authServices)
     {
         _authServices = authServices;
     }

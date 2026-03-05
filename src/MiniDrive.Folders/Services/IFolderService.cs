@@ -32,6 +32,15 @@ public interface IFolderService
         string? searchTerm = null);
 
     /// <summary>
+    /// Lists folders for a user with pagination support, optionally filtered by parent.
+    /// </summary>
+    Task<Result<IReadOnlyCollection<Folder>>> ListFoldersAsync(
+        Guid ownerId,
+        Guid? parentFolderId,
+        string? searchTerm,
+        Pagination pagination);
+
+    /// <summary>
     /// Gets the folder hierarchy (breadcrumb path).
     /// </summary>
     Task<Result<IReadOnlyCollection<Folder>>> GetFolderPathAsync(Guid folderId, Guid ownerId);

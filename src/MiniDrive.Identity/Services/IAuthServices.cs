@@ -6,7 +6,7 @@ namespace MiniDrive.Identity.Services;
 /// <summary>
 /// Interface for authentication services (register, login, logout).
 /// </summary>
-public interface IAuthServices
+public interface IAuthService
 {
     /// <summary>
     /// Registers a new user.

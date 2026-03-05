@@ -11,7 +11,7 @@ using MiniDrive.Identity.Repositories;
 
 namespace MiniDrive.Identity.Services;
 
-public class AuthServices : IAuthServices
+public class AuthService : IAuthService
 {
     private readonly UserRepository _userRepository;
     private readonly TimeSpan _sessionLifetime;
@@ -20,7 +20,7 @@ public class AuthServices : IAuthServices
     private readonly JwtSecurityTokenHandler _tokenHandler = new();
     private readonly TokenValidationParameters _tokenValidationParameters;
 
-    public AuthServices(
+    public AuthService(
         UserRepository userRepository,
         JwtTokenGenerator tokenGenerator,
         IOptions<JwtOptions> jwtOptions,

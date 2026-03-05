@@ -56,7 +56,7 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
     }
 });
 builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Files DI
 builder.Services.AddDbContext<FileDbContext>(options =>

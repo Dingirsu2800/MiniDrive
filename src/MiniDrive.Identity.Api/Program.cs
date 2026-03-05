@@ -62,7 +62,7 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
     }
 });
 builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<IAuthServices, AuthServices>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 var app = builder.Build();
 
