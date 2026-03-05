@@ -12,7 +12,7 @@ namespace MiniDrive.Files.Services;
 /// <summary>
 /// Service for file operations (upload, download, delete, etc.).
 /// </summary>
-public class FileService
+public class FileService : IFileService
 {
     private readonly FileRepository _fileRepository;
     private readonly IFileStorage _fileStorage;

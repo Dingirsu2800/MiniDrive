@@ -35,7 +35,7 @@ builder.Services.AddDbContext<FolderDbContext>(options =>
     }
 });
 builder.Services.AddScoped<FolderRepository>();
-builder.Services.AddScoped<FolderService>();
+builder.Services.AddScoped<IFolderService, FolderService>();
 
 // Microservice clients
 builder.Services.AddCachedIdentityClient(builder.Configuration);

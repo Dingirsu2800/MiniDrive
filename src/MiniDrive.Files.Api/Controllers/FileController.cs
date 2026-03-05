@@ -11,10 +11,10 @@ namespace MiniDrive.Files.Api.Controllers;
 [Route("api/[controller]")]
 public class FileController : ControllerBase
 {
-    private readonly FileService _fileService;
+    private readonly IFileService _fileService;
     private readonly IIdentityClient _identityClient;
 
-    public FileController(FileService fileService, IIdentityClient identityClient)
+    public FileController(IFileService fileService, IIdentityClient identityClient)
     {
         _fileService = fileService;
         _identityClient = identityClient;

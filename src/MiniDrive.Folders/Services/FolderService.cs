@@ -7,7 +7,7 @@ namespace MiniDrive.Folders.Services;
 /// <summary>
 /// Service for folder operations (create, read, update, delete).
 /// </summary>
-public class FolderService
+public class FolderService : IFolderService
 {
     private readonly FolderRepository _folderRepository;
 

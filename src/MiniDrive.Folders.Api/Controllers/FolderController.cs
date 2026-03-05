@@ -10,10 +10,10 @@ namespace MiniDrive.Folders.Api.Controllers;
 [Route("api/[controller]")]
 public class FolderController : ControllerBase
 {
-    private readonly FolderService _folderService;
+    private readonly IFolderService _folderService;
     private readonly IIdentityClient _identityClient;
 
-    public FolderController(FolderService folderService, IIdentityClient identityClient)
+    public FolderController(IFolderService folderService, IIdentityClient identityClient)
     {
         _folderService = folderService;
         _identityClient = identityClient;

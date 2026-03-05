@@ -37,7 +37,7 @@ builder.Services.AddDbContext<SharingDbContext>(options =>
 });
 
 builder.Services.AddScoped<ShareRepository>();
-builder.Services.AddScoped<ShareService>();
+builder.Services.AddScoped<IShareService, ShareService>();
 
 // Microservice clients
 builder.Services.AddCachedIdentityClient(builder.Configuration);

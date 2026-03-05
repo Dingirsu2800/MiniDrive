@@ -11,7 +11,7 @@ using MiniDrive.Identity.Repositories;
 
 namespace MiniDrive.Identity.Services;
 
-public class AuthServices
+public class AuthServices : IAuthServices
 {
     private readonly UserRepository _userRepository;
     private readonly TimeSpan _sessionLifetime;

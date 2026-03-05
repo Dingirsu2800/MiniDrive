@@ -10,7 +10,7 @@ namespace MiniDrive.Sharing.Services;
 /// <summary>
 /// Service for sharing operations (create, update, delete, manage permissions).
 /// </summary>
-public class ShareService
+public class ShareService : IShareService
 {
     private readonly ShareRepository _shareRepository;
 

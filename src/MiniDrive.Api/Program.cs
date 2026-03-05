@@ -56,7 +56,7 @@ builder.Services.AddDbContext<IdentityDbContext>(options =>
     }
 });
 builder.Services.AddScoped<UserRepository>();
-builder.Services.AddScoped<AuthServices>();
+builder.Services.AddScoped<IAuthServices, AuthServices>();
 
 // Files DI
 builder.Services.AddDbContext<FileDbContext>(options =>
@@ -72,7 +72,7 @@ builder.Services.AddDbContext<FileDbContext>(options =>
     }
 });
 builder.Services.AddScoped<FileRepository>();
-builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 // Folders DI
 builder.Services.AddDbContext<FolderDbContext>(options =>
@@ -88,7 +88,7 @@ builder.Services.AddDbContext<FolderDbContext>(options =>
     }
 });
 builder.Services.AddScoped<FolderRepository>();
-builder.Services.AddScoped<FolderService>();
+builder.Services.AddScoped<IFolderService, FolderService>();
 
 // Audit DI
 builder.Services.AddAuditServices(builder.Configuration, builder.Environment.EnvironmentName);

@@ -56,7 +56,7 @@ builder.Services.AddScoped<FileRepository>();
 builder.Services.AddScoped<MiniDrive.Quota.Services.IQuotaService, MiniDrive.Files.Api.Adapters.QuotaServiceAdapter>();
 builder.Services.AddScoped<MiniDrive.Audit.Services.IAuditService, MiniDrive.Files.Api.Adapters.AuditServiceAdapter>();
 
-builder.Services.AddScoped<FileService>();
+builder.Services.AddScoped<IFileService, FileService>();
 
 // Microservice clients
 builder.Services.AddCachedIdentityClient(builder.Configuration);

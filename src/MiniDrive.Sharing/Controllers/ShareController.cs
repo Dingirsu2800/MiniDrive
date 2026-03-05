@@ -14,9 +14,9 @@ namespace MiniDrive.Sharing.Controllers;
 [Route("api/[controller]")]
 public class ShareController : ControllerBase
 {
-    private readonly ShareService _shareService;
+    private readonly IShareService _shareService;
 
-    public ShareController(ShareService shareService)
+    public ShareController(IShareService shareService)
     {
         _shareService = shareService;
     }
