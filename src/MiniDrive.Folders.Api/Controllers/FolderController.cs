@@ -89,7 +89,7 @@ public class FolderController : ControllerBase
         }
 
         var pagination = new Pagination(pageNumber, pageSize);
-        var result = await _folderService.ListFoldersAsync(userId.Value, parentFolderId, search, pagination);
+        var result = await _folderService.ListFoldersPagedAsync(userId.Value, parentFolderId, search, pagination);
         if (!result.Succeeded)
         {
             return BadRequest(new { error = result.Error });

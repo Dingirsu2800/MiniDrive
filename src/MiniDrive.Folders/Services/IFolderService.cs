@@ -32,9 +32,21 @@ public interface IFolderService
         string? searchTerm = null);
 
     /// <summary>
-    /// Lists folders for a user with pagination support, optionally filtered by parent.
+    /// Lists folders for a user with pagination support, optionally filtered by parent and search term.
+    /// Returns a <see cref="PagedResult{T}" /> containing the current page of <see cref="Folder" /> items
+    /// plus pagination metadata such as total item count and page/page-size information, with stable ordering
+    /// so that subsequent pages can be requested reliably.
     /// </summary>
-    Task<Result<PagedResult<Folder>>> ListFoldersAsync(
+    /// <param name="ownerId">The owner whose folders to list.</param>
+    /// <param name="parentFolderId">Optional parent folder to filter by. If <c>null</c>, lists root-level folders.</param>
+    /// <param name="searchTerm">Optional search term to filter folders by name or other criteria.</param>
+    /// <param name="pagination">Pagination settings (page number and page size) used to select which page to return.</param>
+    /// <returns>
+    /// A <see cref="Result{T}" /> containing a <see cref="PagedResult{T}" /> of <see cref="Folder" /> items for the requested page,
+    /// along with pagination metadata (total number of matching folders, page count, and page information) that callers can
+    /// use to retrieve subsequent pages.
+    /// </returns>
+    Task<Result<PagedResult<Folder>>> ListFoldersPagedAsync(
         Guid ownerId,
         Guid? parentFolderId,
         string? searchTerm,
